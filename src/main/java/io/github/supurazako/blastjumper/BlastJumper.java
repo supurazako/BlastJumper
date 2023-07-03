@@ -16,6 +16,7 @@ import org.bukkit.util.Vector;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.logging.Logger;
 
 
@@ -65,40 +66,39 @@ public final class BlastJumper extends JavaPlugin implements Listener {
         try {
             if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                 ItemStack item = event.getItem();
-                logger.info("右クリックを検知");
+                // logger.info("右クリックを検知");
 
                 // 右クリックしているのが時計かを確認
                 if (item != null && item.getType() == Material.CLOCK) {
 
-                    logger.info("右クリックが時計なのを確認");
+                    // logger.info("右クリックが時計なのを確認");
                     Player player = event.getPlayer();
 
                     int playerEntityId = player.getEntityId();
 
-                    // プレイヤーがTNTを持っているか確認
-                    if (player.getInventory().contains(Material.TNT)) {
-                        if (tntTimers.containsKey(playerEntityId)) {
-                            logger.info("TNTがすでに呼び出されている");
-                            // 既にTNTが呼び出されている場合の処理
-                            int tntEntityId = playerTNTMap.get(player);
-                            triggerTNTExplosionEffect(player, tntEntityId);
+                    if (tntTimers.containsKey(playerEntityId)) {
+                        // logger.info("TNTがすでに呼び出されている");
+                        // 既にTNTが呼び出されている場合の処理
+                        int tntEntityId = playerTNTMap.get(player);
+                        triggerTNTExplosionEffect(player, tntEntityId);
 
-                        } else {
+                    } else {
+                        if (player.getInventory().contains(Material.TNT)) {
                             // TNTがまだ呼び出されていない場合
-                            logger.info("TNTはまだ呼び出されていない");
+                            // logger.info("TNTはまだ呼び出されていない");
 
                             // TNTを呼び出す処理
                             spawnTNT(player);
 
                             // TNTを消費する
                             player.getInventory().removeItem(new ItemStack(Material.TNT, 1));
+
+                        } else {
+                            // TNTを持っていない場合
+                            // logger.info("TNTを持っていない");
+                            player.sendMessage("TNTを持っていません");
+
                         }
-
-
-                    } else {
-                        // TNTを持っていない場合
-                        logger.info("TNTを持っていない");
-                        player.sendMessage("TNTを持っていません");
                     }
                 }
             }
@@ -117,7 +117,7 @@ public final class BlastJumper extends JavaPlugin implements Listener {
             Location location = player.getLocation();
             Vector direction = location.getDirection();
 
-            double speed = 3.0; // 速度の値 必要に応じて調整
+            double speed = 0.5; // 速度の値 必要に応じて調整
             int fuseTicks = 20 * 5; // 爆発するまでの時間
             int timerDelay = fuseTicks - 3;
 
@@ -155,7 +155,15 @@ public final class BlastJumper extends JavaPlugin implements Listener {
                 if (tnt != null) {
                     // TNTの爆発エフェクトとサウンドエフェクトのスポーン処理
                     Location tntLocation = tnt.getLocation();
-                    player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, tntLocation, 1);
+
+                    Random random = new Random();
+                    for (int i = 0; i <15; i ++) {
+                        double offsetX = random.nextGaussian() * 0.5;
+                        double offsetY = random.nextGaussian() * 0.5;
+                        double offsetZ = random.nextGaussian() * 0.5;
+                        Location particleLocation = tntLocation.clone().add(offsetX, offsetY, offsetZ);
+                        player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, particleLocation, 1);
+                    }
                     player.getWorld().playSound(tntLocation, Sound.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 1, 1);
 
                     // TNTのふっとばし処理
