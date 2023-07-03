@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+
 public final class BlastJumper extends JavaPlugin implements Listener {
 
     @Override
@@ -25,7 +26,7 @@ public final class BlastJumper extends JavaPlugin implements Listener {
         // Plugin startup logic
         logger = getLogger();
 
-        getServer().getPluginManager().registerEvents(new BlastJumper(), this);
+        getServer().getPluginManager().registerEvents(this, this);
 
         loadConfiguration();
 
