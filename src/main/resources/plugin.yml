@@ -1,0 +1,4 @@
+name: BlastJumper
+version: '${project.version}'
+main: io.github.supurazako.blastjumper.BlastJumper
+api-version: 1.19

@@ -1,0 +1,4 @@
+#TNTの爆発の設定
+tntEffect:
+  radius: 3.0
+  power: 5.0
