@@ -25,6 +25,8 @@ public final class BlastJumper extends JavaPlugin implements Listener {
         // Plugin startup logic
         logger = getLogger();
 
+        getServer().getPluginManager().registerEvents(new BlastJumper(), this);
+
         loadConfiguration();
 
     }
@@ -37,6 +39,7 @@ public final class BlastJumper extends JavaPlugin implements Listener {
             getConfig().options().copyDefaults(true);
             saveDefaultConfig();
             reloadConfig();
+            logger.info("configをロードしました");
 
             // TNTの爆発効果の設定を読み込む
             tntEffectRadius = getConfig().getDouble("tntEffect.radius");
@@ -61,9 +64,12 @@ public final class BlastJumper extends JavaPlugin implements Listener {
         try {
             if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                 ItemStack item = event.getItem();
+                logger.info("右クリックを検知");
 
                 // 右クリックしているのが時計かを確認
                 if (item != null && item.getType() == Material.CLOCK) {
+
+                    logger.info("右クリックが時計なのを確認");
                     Player player = event.getPlayer();
 
                     int playerEntityId = player.getEntityId();
@@ -71,12 +77,14 @@ public final class BlastJumper extends JavaPlugin implements Listener {
                     // プレイヤーがTNTを持っているか確認
                     if (player.getInventory().contains(Material.TNT)) {
                         if (tntTimers.containsKey(playerEntityId)) {
+                            logger.info("TNTがすでに呼び出されている");
                             // 既にTNTが呼び出されている場合の処理
                             int tntEntityId = playerTNTMap.get(player);
                             triggerTNTExplosionEffect(player, tntEntityId);
 
                         } else {
                             // TNTがまだ呼び出されていない場合
+                            logger.info("TNTはまだ呼び出されていない");
 
                             // TNTを呼び出す処理
                             spawnTNT(player);
@@ -88,6 +96,7 @@ public final class BlastJumper extends JavaPlugin implements Listener {
 
                     } else {
                         // TNTを持っていない場合
+                        logger.info("TNTを持っていない");
                         player.sendMessage("TNTを持っていません");
                     }
                 }
